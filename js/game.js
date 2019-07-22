@@ -29,6 +29,8 @@ function init() {
     startPreload();
 
     score = 0; // reset game score
+    level = 0;
+    question = 0;
 
     stage.update();
 }
@@ -43,13 +45,17 @@ function endGame() {
 function imageClickHandler(event) {
     event.target.x = event.stageX;
     event.target.y = event.stageY;
+
+    console.log("test");
 }
 
 // bitmap letiables
 let background;
 let logo;
 let pylons = [];
+let pylonText = [];
 let numberBoxes = [];
+let pylonContainer = [];
 
 function setupManifest() {
     manifest = [
@@ -131,27 +137,111 @@ function loadComplete(event) {
     stage.addChild(background);
     stage.addChild(logo);
 
+    generateNumbers();
     initGraphics();
+}
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+}
+
+function generateNumbers() {
+    for (let i = 0; i < 5; i++) {
+        numbers.push(getRandomInt(10));
+    }
 }
 
 function initGraphics() {
 
     for (let i = 0; i < numberBoxes.length; i++) {
-        numberBoxes[i].scaleX = 0.2;
-        numberBoxes[i].scaleY = 0.2;
-        numberBoxes[i].x = STAGE_WIDTH / 5 + (numberBoxes[i].width * i);
-        numberBoxes[i].y = 100;
+        numberBoxes[i].scaleX = 2;
+        numberBoxes[i].scaleY = 2;
+        numberBoxes[i].y = 425;
+
+        switch (i) {
+            case 0:
+                numberBoxes[i].x = (STAGE_WIDTH / 2) - (numberBoxes[i].image.width * (6));
+                break;
+            case 1:
+                numberBoxes[i].x = (STAGE_WIDTH / 2) - (numberBoxes[i].image.width * (4)) + (numberBoxes[i].image.width / 1.5);
+                break;
+            case 2:
+                //CENTER
+                numberBoxes[i].x = (STAGE_WIDTH / 2) - (numberBoxes[i].image.width);
+                break;
+            case 3:
+                numberBoxes[i].x = (STAGE_WIDTH / 2) + (numberBoxes[i].image.width * (2)) - (numberBoxes[i].image.width / 1.5);
+                break;
+            case 4:
+                numberBoxes[i].x = (STAGE_WIDTH / 2) + (numberBoxes[i].image.width * (4));
+                break;
+        }
+
         stage.addChild(numberBoxes[i]);
+
         console.log("numberBoxes" + i);
     }
 
     for (let i = 0; i < pylons.length; i++) {
         pylons[i].scaleX = 0.2;
         pylons[i].scaleY = 0.2;
-        pylons[i].x = STAGE_WIDTH / 5 + (pylons[i].width * i);
-        pylons[i].y = 200;
-        stage.addChild(pylons[i]);
-        console.log("pylons" + i + " - ScaleX:" + pylons[i].scaleX + " - ScaleY:" + pylons[i].scaleY);
+
+        pylonText[i] = new createjs.Text(numbers[i] + "", "50px Arial", "#FFFFFF");
+        pylonText[i].textBaseline = "alphabetic";
+
+        switch (i) {
+            case 0:
+                pylons[i].x = (STAGE_WIDTH / 2) - ((pylons[i].image.width * pylons[i].scaleX / 2) * (6)) + ((pylons[i].image.width * pylons[i].scaleX / 2) / 1.5);
+                pylons[i].y = 250;
+
+                pylonText[i].x = (STAGE_WIDTH / 2) - (72 / 6) - ((pylons[i].image.width * pylons[i].scaleX / 2) * (4)) - 20;
+                pylonText[i].y = 350 + 60;
+
+                break;
+            case 1:
+                pylons[i].x = (STAGE_WIDTH / 2) - ((pylons[i].image.width * pylons[i].scaleX / 2) * (4)) + ((pylons[i].image.width * pylons[i].scaleX / 2) / 1.5);
+                pylons[i].y = 225;
+
+                pylonText[i].x = (STAGE_WIDTH / 2) - (72 / 6) - ((pylons[i].image.width * pylons[i].scaleX / 2) * (2)) - 20;
+                pylonText[i].y = 325 + 60;
+
+                break;
+            case 2:
+                //CENTER
+                pylons[i].x = (STAGE_WIDTH / 2) - (pylons[i].image.width * pylons[i].scaleX / 2);
+                pylons[i].y = 200;
+
+                pylonText[i].x = (STAGE_WIDTH / 2) - (72 / 6);
+                pylonText[i].y = 300 + 60;
+
+                break;
+            case 3:
+                pylons[i].x = (STAGE_WIDTH / 2) + ((pylons[i].image.width * pylons[i].scaleX / 2) * (2)) - ((pylons[i].image.width * pylons[i].scaleX / 2) / 1.5);
+                pylons[i].y = 225;
+
+                pylonText[i].x = (STAGE_WIDTH / 2) - (72 / 6) + ((pylons[i].image.width * pylons[i].scaleX / 2) * (2)) + 20;
+                pylonText[i].y = 325 + 60;
+
+                break;
+            case 4:
+                pylons[i].x = (STAGE_WIDTH / 2) + ((pylons[i].image.width * pylons[i].scaleX / 2) * (4)) - ((pylons[i].image.width * pylons[i].scaleX / 2) / 1.5);
+                pylons[i].y = 250;
+
+                pylonText[i].x = (STAGE_WIDTH / 2) - (72 / 6) + ((pylons[i].image.width * pylons[i].scaleX / 2) * (4)) + 20;
+                pylonText[i].y = 350 + 60;
+
+                break;
+        }
+
+        pylonContainer.push(new createjs.Container());
+
+        pylonContainer[i].on("click", function (event) {
+            imageClickHandler(event);
+        });
+
+        pylonContainer[i].addChild(pylons[i], pylonText[i]);
+
+        stage.addChild(pylonContainer[i]);
     }
 
     gameStarted = true;
