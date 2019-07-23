@@ -1,3 +1,4 @@
-- Levels (3 levels, 5 questions per level, randomly generate numbers per level)
-- Figure out if the numbers they click on the pylons are in order
-- Update the number boxes
+- Update number boxes to have text in them when the animation completes.
+- Add check button
+- If check is successful, add a point to their score and reload the map & make go to next question on that level, after 5 questions,
+move to next level (levels get harder with higher numbers)

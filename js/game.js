@@ -13,6 +13,9 @@ let level;
 let question;
 let numbers = [];
 let stage = new createjs.Stage("gameCanvas"); // canvas id is gameCanvas
+let numbersOrder = [];
+let clickedPylon;
+let hockeypuck = [];
 
 /*
  * Called by body onload
@@ -43,10 +46,25 @@ function endGame() {
 }
 
 function imageClickHandler(event) {
-    event.target.x = event.stageX;
-    event.target.y = event.stageY;
+    //event.target.x = event.stageX;
+    //event.target.y = event.stageY;
 
-    console.log("test");
+    if (pylons.includes(event.target)) {
+        for (let i = 0; i < pylons.length; i++) {
+            if (pylons[i] == event.target) {
+
+                numbersOrder.push(parseInt(pylonText[i].text.toString()));
+                //stage.removeChild(pylonText[i]);
+
+                clickedPylon = i;
+
+                //TODO animate number move of the text.
+
+                break;
+            }
+        }
+    }
+    //stage.removeChild(event.target);
 }
 
 // bitmap letiables
@@ -55,7 +73,6 @@ let logo;
 let pylons = [];
 let pylonText = [];
 let numberBoxes = [];
-let pylonContainer = [];
 
 function setupManifest() {
     manifest = [
@@ -74,6 +91,10 @@ function setupManifest() {
         {
             src: "img/number-box.png",
             id: "number-box"
+        },
+        {
+            src: "img/hockey-puck.png",
+            id: "hockey-puck"
         }
     ];
 }
@@ -89,8 +110,26 @@ function startPreload() {
 }
 
 function update(event) {
+    if (clickedPylon != null) {
+        createjs.Tween.get(hockeypuck[clickedPylon]).to({
+            x: pylons[clickedPylon].x,
+            y: pylons[clickedPylon].y
+        }, 500).call(handleComplete);
+    }
 
     stage.update(event);
+}
+
+function handleComplete() {
+    stage.removeChild(pylons[clickedPylon]);
+    stage.removeChild(pylonText[clickedPylon]);
+
+    stage.removeChild(hockeypuck[clickedPylon]);
+
+    clickedPylon = null;
+
+    //respawnHockeyPuck();
+    //Tween complete
 }
 
 // not currently used as load time is short
@@ -117,6 +156,11 @@ function handleFileLoad(event) {
     if (event.item.id == "number-box") {
         for (let i = 0; i < 5; i++) {
             numberBoxes.push(new createjs.Bitmap(event.result));
+        }
+    }
+    if (event.item.id == "hockey-puck") {
+        for (let i = 0; i < 5; i++) {
+            hockeypuck.push(new createjs.Bitmap(event.result));
         }
     }
 }
@@ -148,6 +192,18 @@ function getRandomInt(max) {
 function generateNumbers() {
     for (let i = 0; i < 5; i++) {
         numbers.push(getRandomInt(10));
+    }
+}
+
+function respawnHockeyPuck() {
+
+    for (let i = 0; i < 5; i++) {
+        hockeypuck[i].x = 590;
+        hockeypuck[i].y = 510;
+        hockeypuck[i].scaleX = 0.05;
+        hockeypuck[i].scaleY = 0.05;
+
+        stage.addChild(hockeypuck[i]);
     }
 }
 
@@ -233,16 +289,15 @@ function initGraphics() {
                 break;
         }
 
-        pylonContainer.push(new createjs.Container());
-
-        pylonContainer[i].on("click", function (event) {
+        pylons[i].on("click", function (event) {
             imageClickHandler(event);
         });
 
-        pylonContainer[i].addChild(pylons[i], pylonText[i]);
-
-        stage.addChild(pylonContainer[i]);
+        stage.addChild(pylonText[i]);
+        stage.addChild(pylons[i]);
     }
+
+    respawnHockeyPuck();
 
     gameStarted = true;
 }
