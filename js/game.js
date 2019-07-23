@@ -15,7 +15,6 @@ let numbers = [];
 let stage = new createjs.Stage("gameCanvas"); // canvas id is gameCanvas
 let numbersOrder = [];
 let clickedPylon;
-let hockeypuck = [];
 
 /*
  * Called by body onload
@@ -45,34 +44,14 @@ function endGame() {
     gameStarted = false;
 }
 
-function imageClickHandler(event) {
-    //event.target.x = event.stageX;
-    //event.target.y = event.stageY;
-
-    if (pylons.includes(event.target)) {
-        for (let i = 0; i < pylons.length; i++) {
-            if (pylons[i] == event.target) {
-
-                numbersOrder.push(parseInt(pylonText[i].text.toString()));
-                //stage.removeChild(pylonText[i]);
-
-                clickedPylon = i;
-
-                //TODO animate number move of the text.
-
-                break;
-            }
-        }
-    }
-    //stage.removeChild(event.target);
-}
-
 // bitmap letiables
 let background;
 let logo;
 let pylons = [];
 let pylonText = [];
 let numberBoxes = [];
+let hockeypuck = [];
+let checkbutton;
 
 function setupManifest() {
     manifest = [
@@ -95,6 +74,10 @@ function setupManifest() {
         {
             src: "img/hockey-puck.png",
             id: "hockey-puck"
+        },
+        {
+            src: "img/check-button.png",
+            id: "check-button"
         }
     ];
 }
@@ -147,6 +130,9 @@ function handleFileLoad(event) {
     }
     if (event.item.id == "logo") {
         logo = new createjs.Bitmap(event.result);
+    }
+    if (event.item.id == "check-button") {
+        checkbutton = new createjs.Bitmap(event.result);
     }
     if (event.item.id == "pylon") {
         for (let i = 0; i < 5; i++) {
@@ -290,17 +276,74 @@ function initGraphics() {
         }
 
         pylons[i].on("click", function (event) {
-            imageClickHandler(event);
+            pylonClickHandler(event);
         });
 
         stage.addChild(pylonText[i]);
         stage.addChild(pylons[i]);
     }
 
+    checkbutton.y = 510;
+    checkbutton.x = (STAGE_WIDTH / 2) - (checkbutton.image.width / 2);
+    checkbutton.on("click", function (event) {
+        checkNumbers(event);
+    });
+
+    stage.addChild(checkbutton);
+
     respawnHockeyPuck();
 
     gameStarted = true;
 }
+
+function checkNumbers(event) {
+    //event.target.x = event.stageX;
+    //event.target.y = event.stageY;
+
+    if (numbersOrder.length == 5) {
+        console.log(isSorted(numbersOrder));
+    }
+
+    //stage.removeChild(event.target);
+}
+
+
+function pylonClickHandler(event) {
+    //event.target.x = event.stageX;
+    //event.target.y = event.stageY;
+
+    if (pylons.includes(event.target)) {
+        for (let i = 0; i < pylons.length; i++) {
+            if (pylons[i] == event.target) {
+
+                numbersOrder.push(parseInt(pylonText[i].text.toString()));
+                //stage.removeChild(pylonText[i]);
+
+                clickedPylon = i;
+
+                //TODO animate number move of the text.
+
+                break;
+            }
+        }
+    }
+    //stage.removeChild(event.target);
+}
+
+/**
+ * Returns true of false, indicating whether the given array of numbers is sorted
+ *  isSorted([])                        // true
+ *  isSorted([-Infinity, -5, 0, 3, 9])  // true
+ *  isSorted([3, 9, -3, 10])            // false
+ *
+ * @param {number[]} arr
+ * @return {boolean}
+ */
+function isSorted(arr) {
+    const limit = arr.length - 1;
+    return arr.every((_, i) => (i < limit ? arr[i] <= arr[i + 1] : true));
+}
+
 
 /**
  pylon.x = 50;
