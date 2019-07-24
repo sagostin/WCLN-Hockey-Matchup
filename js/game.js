@@ -22,7 +22,7 @@ let logo;
 let pylons = [];
 let pylonText = [];
 let numberBoxes = [];
-let hockeypuck = [];
+let hockeypuck;
 let checkbutton;
 
 /*
@@ -121,9 +121,7 @@ function handleFileLoad(event) {
         }
     }
     if (event.item.id == "hockey-puck") {
-        for (let i = 0; i < 5; i++) {
-            hockeypuck.push(new createjs.Bitmap(event.result));
-        }
+        hockeypuck = new createjs.Bitmap(event.result);
     }
 }
 
@@ -164,10 +162,10 @@ function getRandomInt(max) {
  *
  */
 function generateNumbers() {
-    while (numbers.length <= 5) {
+    while (numbers.length < 5) {
         let max = level * 10 + 10;
 
-        let number = getRandomInt(10);
+        let number = getRandomInt(max);
         if (!numbers.includes(number)) {
             numbers.push(number);
         }
@@ -178,16 +176,13 @@ function generateNumbers() {
  * Respawn all the hockey pucks.
  *
  */
-function respawnHockeyPuck() {
+function resetHockeyPuck() {
+    hockeypuck.x = 590;
+    hockeypuck.y = 510;
+    hockeypuck.scaleX = 0.05;
+    hockeypuck.scaleY = 0.05;
 
-    for (let i = 0; i < 5; i++) {
-        hockeypuck[i].x = 590;
-        hockeypuck[i].y = 510;
-        hockeypuck[i].scaleX = 0.05;
-        hockeypuck[i].scaleY = 0.05;
-
-        stage.addChild(hockeypuck[i]);
-    }
+    stage.addChild(hockeypuck);
 }
 
 /**
@@ -210,7 +205,7 @@ function initGraphics() {
                     numberBoxes[i].x = (STAGE_WIDTH / 2) - (numberBoxes[i].image.width * (4)) + (numberBoxes[i].image.width / 1.5);
                     break;
                 case 2:
-                    //CENTER
+                    //                     //CENTER
                     numberBoxes[i].x = (STAGE_WIDTH / 2) - (numberBoxes[i].image.width);
                     break;
                 case 3:
@@ -281,7 +276,8 @@ function initGraphics() {
         stage.addChild(checkbutton);
     }
 
-    respawnHockeyPuck();
+    resetHockeyPuck();
+
     gameStarted = true;
 }
 
@@ -291,8 +287,12 @@ function initGraphics() {
  * @param event
  */
 function checkNumbers(event) {
-    if (numbersOrder.length == 5) {
+    level++;
+    if (numbersOrder.length >= 5) {
         if (isSorted(numbersOrder)) {
+
+            console.log("numbers are in order.");
+
             numbersOrder = [];
             numbers = [];
             clickedPylon = null;
@@ -304,11 +304,28 @@ function checkNumbers(event) {
                 stage.removeChild(pylonText[i]);
             }
             pylonText = [];
+            boxCount = 0;
 
+            if (question < 1) {
+                question++;
+            } else {
+                question = 0;
+                if (level < 2) {
+                    level++;
+                } else {
+                    level = 0;
+                }
+            }
+
+            gameStarted = false;
             generateNumbers();
             initGraphics();
+        } else {
+            console.log("numbers are not in order.");
         }
     }
+
+    console.log("question: " + question + " level: " + level);
 
     //stage.removeChild(event.target);
 }
@@ -328,11 +345,7 @@ function pylonClickHandler(event) {
 
                 numbersOrder.push(parseInt(pylonText[i].text.toString()));
                 //stage.removeChild(pylonText[i]);
-
                 clickedPylon = i;
-
-                //TODO animate number move of the text.
-
                 break;
             }
         }
@@ -347,7 +360,7 @@ function pylonClickHandler(event) {
 
 function update(event) {
     if (clickedPylon != null) {
-        createjs.Tween.get(hockeypuck[clickedPylon]).to({
+        createjs.Tween.get(hockeypuck).to({
             x: pylons[clickedPylon].x,
             y: pylons[clickedPylon].y
         }, 500).call(hockeyPuckAnimate);
@@ -364,19 +377,18 @@ let boxCount = 0;
 
 function hockeyPuckAnimate() {
 
-    pylonText[clickedPylon].x = numberBoxes[0].x + (numberBoxes[0].image.width);
-    pylonText[clickedPylon].y = numberBoxes[0].y + (numberBoxes[0].image.height * 1.5);
+    //TODO fix these errors.
+    pylonText[clickedPylon].x = numberBoxes[boxCount].x + (numberBoxes[boxCount].image.width);
+    pylonText[clickedPylon].y = numberBoxes[boxCount].y + (numberBoxes[boxCount].image.height * 1.5);
 
     stage.removeChild(pylons[clickedPylon]);
-    //stage.removeChild(pylonText[clickedPylon]);
-
-    stage.removeChild(hockeypuck[clickedPylon]);
+    //stage.removeChild(hockeypuck);
 
     clickedPylon = null;
 
     boxCount++;
 
-    //respawnHockeyPuck();
+    resetHockeyPuck();
     //Tween complete
 }
 
@@ -391,11 +403,3 @@ function isSorted(arr) {
     const limit = arr.length - 1;
     return arr.every((_, i) => (i < limit ? arr[i] <= arr[i + 1] : true));
 }
-
-
-/**
- pylon.x = 50;
- pylon.y = 50;
- pylon.scaleX = 0.2;
- pylon.scaleY = 0.2;
- */
