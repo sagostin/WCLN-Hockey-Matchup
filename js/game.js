@@ -8,20 +8,29 @@
 let FPS = 24;
 let gameStarted = false;
 let STAGE_WIDTH, STAGE_HEIGHT;
+let stage = new createjs.Stage("gameCanvas"); // canvas id is gameCanvas
+
 let score = 0;
 let level = 0;
 let question = 0;
+
 let numbers = [];
-let stage = new createjs.Stage("gameCanvas"); // canvas id is gameCanvas
 let numbersOrder = [];
+
 let clickedPylon;
+
+let levelText;
+let questionText;
+let scoreText;
 
 // bitmap letiables
 let background;
 let logo;
+
 let pylons = [];
 let pylonText = [];
 let numberBoxes = [];
+
 let hockeypuck;
 let checkbutton;
 
@@ -191,6 +200,30 @@ function resetHockeyPuck() {
  */
 function initGraphics() {
 
+    levelText = new createjs.Text("Level: " + (level + 1), "32px Arial", "#FFFFFF");
+    levelText.textBaseline = "alphabetic";
+    levelText.align = "center";
+    levelText.x = 650;
+    levelText.y = 50;
+
+    stage.addChild(levelText);
+
+    questionText = new createjs.Text("Question: " + (question + 1), "32px Arial", "#FFFFFF");
+    questionText.align = "center";
+    questionText.textBaseline = "alphabetic";
+    questionText.x = 625;
+    questionText.y = 75;
+
+    stage.addChild(questionText);
+
+    scoreText = new createjs.Text("Score: " + (score) + "/" + ((level + 1) * (5)), "32px Arial", "#FFFFFF");
+    scoreText.align = "center";
+    scoreText.textBaseline = "alphabetic";
+    scoreText.x = 25;
+    scoreText.y = 575;
+
+    stage.addChild(scoreText);
+
     if (!gameStarted) {
         for (let i = 0; i < numberBoxes.length; i++) {
             numberBoxes[i].scaleX = 2;
@@ -287,7 +320,6 @@ function initGraphics() {
  * @param event
  */
 function checkNumbers(event) {
-    level++;
     if (numbersOrder.length >= 5) {
         if (isSorted(numbersOrder)) {
 
@@ -303,10 +335,15 @@ function checkNumbers(event) {
             for (let i = 0; i < pylonText.length; i++) {
                 stage.removeChild(pylonText[i]);
             }
+
+            stage.removeChild(levelText);
+            stage.removeChild(questionText);
+            stage.removeChild(scoreText);
+
             pylonText = [];
             boxCount = 0;
 
-            if (question < 1) {
+            if (question < 4) {
                 question++;
             } else {
                 question = 0;
@@ -317,15 +354,36 @@ function checkNumbers(event) {
                 }
             }
 
+            score++;
+
             gameStarted = false;
             generateNumbers();
             initGraphics();
         } else {
             console.log("numbers are not in order.");
+
+            numbersOrder = [];
+            numbers = [];
+            clickedPylon = null;
+
+            for (let i = 0; i < pylonText.length; i++) {
+                stage.removeChild(pylonText[i]);
+            }
+
+            stage.removeChild(levelText);
+            stage.removeChild(questionText);
+            stage.removeChild(scoreText);
+
+            pylonText = [];
+            boxCount = 0;
+
+            gameStarted = false;
+            generateNumbers();
+            initGraphics();
         }
     }
 
-    console.log("question: " + question + " level: " + level);
+    resetHockeyPuck();
 
     //stage.removeChild(event.target);
 }
@@ -377,15 +435,14 @@ let boxCount = 0;
 
 function hockeyPuckAnimate() {
 
-    //TODO fix these errors.
-    pylonText[clickedPylon].x = numberBoxes[boxCount].x + (numberBoxes[boxCount].image.width);
-    pylonText[clickedPylon].y = numberBoxes[boxCount].y + (numberBoxes[boxCount].image.height * 1.5);
+    let num = clickedPylon;
 
-    stage.removeChild(pylons[clickedPylon]);
-    //stage.removeChild(hockeypuck);
+    //TODO fix these errors.
+    pylonText[num].x = numberBoxes[boxCount].x + (numberBoxes[boxCount].image.width);
+    pylonText[num].y = numberBoxes[boxCount].y + (numberBoxes[boxCount].image.height * 1.5);
+    stage.removeChild(pylons[num]);
 
     clickedPylon = null;
-
     boxCount++;
 
     resetHockeyPuck();
