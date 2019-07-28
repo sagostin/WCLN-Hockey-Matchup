@@ -445,6 +445,7 @@ function hockeyPuckAnimate() {
     clickedPylon = null;
     boxCount++;
 
+    stage.removeChild(hockeypuck);
     resetHockeyPuck();
     //Tween complete
 }
