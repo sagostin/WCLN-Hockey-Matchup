@@ -34,6 +34,8 @@ let numberBoxes = [];
 let hockeypuck;
 let checkbutton;
 
+let winscreen;
+
 /*
  * Called by body onload
  */
@@ -86,6 +88,10 @@ function setupManifest() {
         {
             src: "img/check-button.png",
             id: "check-button"
+        },
+        {
+            src: "img/win-screen.png",
+            id: "win-screen"
         }
     ];
 }
@@ -131,6 +137,9 @@ function handleFileLoad(event) {
     }
     if (event.item.id == "hockey-puck") {
         hockeypuck = new createjs.Bitmap(event.result);
+    }
+    if (event.item.id == "win-screen") {
+        winscreen = new createjs.Bitmap(event.result);
     }
 }
 
@@ -329,9 +338,6 @@ function checkNumbers(event) {
             numbers = [];
             clickedPylon = null;
 
-            //TODO display score & show question level thing completed for short time.
-            //TODO increment the question number and if it's == to 5, go to next level and make it harder.
-
             for (let i = 0; i < pylonText.length; i++) {
                 stage.removeChild(pylonText[i]);
             }
@@ -343,22 +349,27 @@ function checkNumbers(event) {
             pylonText = [];
             boxCount = 0;
 
-            if (question < 4) {
+            score++;
+
+            gameStarted = false;
+            generateNumbers();
+            initGraphics();
+
+            if (question < 3) {
                 question++;
             } else {
                 question = 0;
                 if (level < 2) {
                     level++;
                 } else {
-                    level = 0;
+                    winscreen.y = 200;
+                    winscreen.x = (STAGE_WIDTH / 2) - (winscreen.image.width / 2);
+                    winscreen.on("click", function (event) {
+                        removeWinScreen(event);
+                    });
+                    stage.addChild(winscreen);
                 }
             }
-
-            score++;
-
-            gameStarted = false;
-            generateNumbers();
-            initGraphics();
         } else {
             console.log("numbers are not in order.");
 
@@ -383,9 +394,38 @@ function checkNumbers(event) {
         }
     }
 
+    stage.removeChild(hockeypuck);
     resetHockeyPuck();
 
     //stage.removeChild(event.target);
+}
+
+function removeWinScreen() {
+    gameStarted = false;
+
+    stage.removeChild(winscreen);
+
+    score = 0;
+    level = 0;
+    question = 0;
+
+    numbersOrder = [];
+    numbers = [];
+    clickedPylon = null;
+
+    for (let i = 0; i < pylonText.length; i++) {
+        stage.removeChild(pylonText[i]);
+    }
+
+    stage.removeChild(levelText);
+    stage.removeChild(questionText);
+    stage.removeChild(scoreText);
+
+    pylonText = [];
+    boxCount = 0;
+
+    generateNumbers();
+    initGraphics();
 }
 
 /**
@@ -400,11 +440,19 @@ function pylonClickHandler(event) {
     if (pylons.includes(event.target)) {
         for (let i = 0; i < pylons.length; i++) {
             if (pylons[i] == event.target) {
+                if (clickedPylon == null) {
+                    numbersOrder.push(parseInt(pylonText[i].text.toString()));
+                    //stage.removeChild(pylonText[i]);
+                    clickedPylon = i;
 
-                numbersOrder.push(parseInt(pylonText[i].text.toString()));
-                //stage.removeChild(pylonText[i]);
-                clickedPylon = i;
-                break;
+                    // Move the hockey puck to the pylon which was clicked.
+                    createjs.Tween.get(hockeypuck).to({
+                        x: pylons[clickedPylon].x,
+                        y: pylons[clickedPylon].y
+                    }, 500).call(hockeyPuckAnimate);
+
+                    break;
+                }
             }
         }
     }
@@ -417,13 +465,6 @@ function pylonClickHandler(event) {
  */
 
 function update(event) {
-    if (clickedPylon != null) {
-        createjs.Tween.get(hockeypuck).to({
-            x: pylons[clickedPylon].x,
-            y: pylons[clickedPylon].y
-        }, 500).call(hockeyPuckAnimate);
-    }
-
     stage.update(event);
 }
 
@@ -435,12 +476,11 @@ let boxCount = 0;
 
 function hockeyPuckAnimate() {
 
-    let num = clickedPylon;
-
     //TODO fix these errors.
-    pylonText[num].x = numberBoxes[boxCount].x + (numberBoxes[boxCount].image.width);
-    pylonText[num].y = numberBoxes[boxCount].y + (numberBoxes[boxCount].image.height * 1.5);
-    stage.removeChild(pylons[num]);
+    pylonText[clickedPylon].x = numberBoxes[boxCount].x + (numberBoxes[boxCount].image.width);
+    pylonText[clickedPylon].y = numberBoxes[boxCount].y + (numberBoxes[boxCount].image.height * 1.5);
+    pylonText[clickedPylon].color = "black";
+    stage.removeChild(pylons[clickedPylon]);
 
     clickedPylon = null;
     boxCount++;
