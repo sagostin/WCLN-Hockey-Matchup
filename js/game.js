@@ -404,6 +404,13 @@ function pylonClickHandler(event) {
                 numbersOrder.push(parseInt(pylonText[i].text.toString()));
                 //stage.removeChild(pylonText[i]);
                 clickedPylon = i;
+                
+                // Move the hockey puck to the pylon which was clicked.
+                createjs.Tween.get(hockeypuck).to({
+                    x: pylons[clickedPylon].x,
+                    y: pylons[clickedPylon].y
+                }, 500).call(hockeyPuckAnimate);
+
                 break;
             }
         }
@@ -417,13 +424,6 @@ function pylonClickHandler(event) {
  */
 
 function update(event) {
-    if (clickedPylon != null) {
-        createjs.Tween.get(hockeypuck).to({
-            x: pylons[clickedPylon].x,
-            y: pylons[clickedPylon].y
-        }, 500).call(hockeyPuckAnimate);
-    }
-
     stage.update(event);
 }
 
@@ -437,9 +437,11 @@ function hockeyPuckAnimate() {
 
     let num = clickedPylon;
 
-    //TODO fix these errors.
+    // Set the pylon text.
     pylonText[num].x = numberBoxes[boxCount].x + (numberBoxes[boxCount].image.width);
     pylonText[num].y = numberBoxes[boxCount].y + (numberBoxes[boxCount].image.height * 1.5);
+
+    // Remove the pylon from the stage.
     stage.removeChild(pylons[num]);
 
     clickedPylon = null;
