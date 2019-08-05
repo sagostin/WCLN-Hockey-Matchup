@@ -1,4 +1,0 @@
-- Update number boxes to have text in them when the animation completes.
-- Add check button
-- If check is successful, add a point to their score and reload the map & make go to next question on that level, after 5 questions,
-move to next level (levels get harder with higher numbers)
