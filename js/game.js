@@ -23,6 +23,9 @@ let levelText;
 let questionText;
 let scoreText;
 
+let correctText;
+let incorrectText;
+
 // bitmap letiables
 let background;
 let logo;
@@ -33,8 +36,11 @@ let numberBoxes = [];
 
 let hockeypuck;
 let checkbutton;
+let howto;
 
 let winscreen;
+
+let firstLevel;
 
 /*
  * Called by body onload
@@ -52,6 +58,7 @@ function init() {
 
     score = 0; // reset game score
     gameStarted = false;
+    firstLevel = true;
 
     stage.update();
 }
@@ -92,6 +99,11 @@ function setupManifest() {
         {
             src: "img/win-screen.png",
             id: "win-screen"
+        }
+        ,
+        {
+            src: "img/howto.png",
+            id: "howto"
         }
     ];
 }
@@ -140,6 +152,9 @@ function handleFileLoad(event) {
     }
     if (event.item.id == "win-screen") {
         winscreen = new createjs.Bitmap(event.result);
+    }
+    if (event.item.id == "howto") {
+        howto = new createjs.Bitmap(event.result);
     }
 }
 
@@ -233,6 +248,17 @@ function initGraphics() {
 
     stage.addChild(scoreText);
 
+    correctText = new createjs.Text("Correct!", "24px Comic Sans MS", "#FFFFFF");
+    correctText.textBaseline = "alphabetic";
+    correctText.x = STAGE_WIDTH / 2 - correctText.getMeasuredWidth() / 2;
+    correctText.y = 400;
+
+    //incorrect text;
+    incorrectText = new createjs.Text("Incorrect!", "24px Comic Sans MS", "#FFFFFF");
+    incorrectText.textBaseline = "alphabetic";
+    incorrectText.x = STAGE_WIDTH / 2 - incorrectText.getMeasuredWidth() / 2;
+    incorrectText.y = 400;
+
     if (!gameStarted) {
         for (let i = 0; i < numberBoxes.length; i++) {
             numberBoxes[i].scaleX = 2;
@@ -308,6 +334,8 @@ function initGraphics() {
         stage.addChild(pylons[i]);
     }
 
+    resetHockeyPuck();
+
     if (!gameStarted) {
         checkbutton.y = 510;
         checkbutton.x = (STAGE_WIDTH / 2) - (checkbutton.image.width / 2);
@@ -318,9 +346,20 @@ function initGraphics() {
         stage.addChild(checkbutton);
     }
 
-    resetHockeyPuck();
+    if (firstLevel) {
+        howto.on("click", function (event) {
+            howtoClick(event);
+        });
+        stage.addChild(howto);
+    }
+
+    firstLevel = false;
 
     gameStarted = true;
+}
+
+function howtoClick() {
+    stage.removeChild(howto);
 }
 
 /**
@@ -350,6 +389,9 @@ function checkNumbers(event) {
             boxCount = 0;
 
             score++;
+
+            stage.addChild(correctText);
+            createjs.Tween.get(correctText).to({alpha: 0}, 2000).call(removeCorrectText);
 
             gameStarted = false;
             generateNumbers();
@@ -388,6 +430,9 @@ function checkNumbers(event) {
             pylonText = [];
             boxCount = 0;
 
+            stage.addChild(incorrectText);
+            createjs.Tween.get(incorrectText).to({alpha: 0}, 2000).call(removeIncorrectText);
+
             gameStarted = false;
             generateNumbers();
             initGraphics();
@@ -398,6 +443,24 @@ function checkNumbers(event) {
     resetHockeyPuck();
 
     //stage.removeChild(event.target);
+}
+
+function removeIncorrectText() {
+    stage.removeChild(incorrectText);
+    //incorrect text;
+    incorrectText = new createjs.Text("Incorrect!", "24px Comic Sans MS", "#FFFFFF");
+    incorrectText.textBaseline = "alphabetic";
+    incorrectText.x = STAGE_WIDTH / 2 - incorrectText.getMeasuredWidth() / 2;
+    incorrectText.y = 400;
+}
+
+function removeCorrectText() {
+    stage.removeChild(correctText);
+    //correct text
+    correctText = new createjs.Text("Correct!", "24px Comic Sans MS", "#FFFFFF");
+    correctText.textBaseline = "alphabetic";
+    correctText.x = STAGE_WIDTH / 2 - correctText.getMeasuredWidth() / 2;
+    correctText.y = 400;
 }
 
 function removeWinScreen() {
