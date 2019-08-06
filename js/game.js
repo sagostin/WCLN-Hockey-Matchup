@@ -42,6 +42,8 @@ let winscreen;
 
 let firstLevel;
 
+let muted;
+
 /*
  * Called by body onload
  */
@@ -59,6 +61,7 @@ function init() {
     score = 0; // reset game score
     gameStarted = false;
     firstLevel = true;
+    muted = false;
 
     stage.update();
 }
@@ -104,8 +107,34 @@ function setupManifest() {
         {
             src: "img/howto.png",
             id: "howto"
+        },
+        {
+            src: "img/unmute.png",
+            id: "mute"
+        },
+        {
+            src: "img/mute.png",
+            id: "unmute"
+        },
+        {
+            src: "sounds/slapshot.mp3",
+            id: "slapshot"
+        },
+        {
+            src: "sounds/puckgoal.mp3",
+            id: "puckgoal"
+        },
+        {
+            src: "sounds/winhorn.mp3",
+            id: "winhorn"
         }
     ];
+}
+
+function playSound(id) {
+    if (muted == false) {
+        createjs.Sound.play(id);
+    }
 }
 
 function startPreload() {
@@ -141,6 +170,12 @@ function handleFileLoad(event) {
         for (let i = 0; i < 5; i++) {
             pylons.push(new createjs.Bitmap(event.result));
         }
+    }
+    if (event.item.id == "mute") {
+        mute = new createjs.Bitmap(event.result);
+    }
+    if (event.item.id == "unmute") {
+        unmute = new createjs.Bitmap(event.result);
     }
     if (event.item.id == "number-box") {
         for (let i = 0; i < 5; i++) {
@@ -205,6 +240,43 @@ function generateNumbers() {
     }
 }
 
+
+let mute, unmute;
+
+function initMuteUnMute() {
+    var hitArea = new createjs.Shape();
+    hitArea.graphics.beginFill("#000").drawRect(0, 0, mute.image.width, mute.image.height);
+    mute.hitArea = unmute.hitArea = hitArea;
+
+    mute.x = unmute.x = STAGE_WIDTH / 4;
+    mute.y = unmute.y = 540;
+
+    mute.cursor = "pointer";
+    unmute.cursor = "pointer";
+
+    mute.on("click", toggleMute);
+    unmute.on("click", toggleMute);
+
+    stage.addChild(mute);
+}
+
+function toggleMute() {
+
+    if (muted == true) {
+        muted = false;
+    } else {
+        muted = true;
+    }
+
+    if (muted == true) {
+        stage.addChild(unmute);
+        stage.removeChild(mute);
+    } else {
+        stage.addChild(mute);
+        stage.removeChild(unmute);
+    }
+}
+
 /**
  * Respawn all the hockey pucks.
  *
@@ -223,6 +295,11 @@ function resetHockeyPuck() {
  *
  */
 function initGraphics() {
+
+
+    if (firstLevel) {
+        initMuteUnMute();
+    }
 
     levelText = new createjs.Text("Level: " + (level + 1), "32px Arial", "#FFFFFF");
     levelText.textBaseline = "alphabetic";
@@ -393,6 +470,8 @@ function checkNumbers(event) {
             stage.addChild(correctText);
             createjs.Tween.get(correctText).to({alpha: 0}, 2000).call(removeCorrectText);
 
+            playSound("puckgoal");
+
             gameStarted = false;
             generateNumbers();
             initGraphics();
@@ -410,6 +489,8 @@ function checkNumbers(event) {
                         removeWinScreen(event);
                     });
                     stage.addChild(winscreen);
+
+                    playSound("winhorn");
                 }
             }
         } else {
@@ -513,6 +594,8 @@ function pylonClickHandler(event) {
                         x: pylons[clickedPylon].x,
                         y: pylons[clickedPylon].y
                     }, 500).call(hockeyPuckAnimate);
+
+                    playSound("slapshot");
 
                     break;
                 }
