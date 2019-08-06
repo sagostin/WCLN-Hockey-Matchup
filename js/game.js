@@ -121,8 +121,12 @@ function setupManifest() {
             id: "slapshot"
         },
         {
-            src: "sounds/puckgoal.mp3",
-            id: "puckgoal"
+            src: "sounds/goalcheer.mp3",
+            id: "goalcheer"
+        },
+        {
+            src: "sounds/goalaww.wav",
+            id: "goalaww"
         },
         {
             src: "sounds/winhorn.mp3",
@@ -325,13 +329,13 @@ function initGraphics() {
 
     stage.addChild(scoreText);
 
-    correctText = new createjs.Text("Correct!", "24px Comic Sans MS", "#FFFFFF");
+    correctText = new createjs.Text("Goal!!", "36px Arial", "#FFFFFF");
     correctText.textBaseline = "alphabetic";
     correctText.x = STAGE_WIDTH / 2 - correctText.getMeasuredWidth() / 2;
     correctText.y = 400;
 
     //incorrect text;
-    incorrectText = new createjs.Text("Incorrect!", "24px Comic Sans MS", "#FFFFFF");
+    incorrectText = new createjs.Text("Miss! Try again!", "36px Arial", "#FFFFFF");
     incorrectText.textBaseline = "alphabetic";
     incorrectText.x = STAGE_WIDTH / 2 - incorrectText.getMeasuredWidth() / 2;
     incorrectText.y = 400;
@@ -468,9 +472,9 @@ function checkNumbers(event) {
             score++;
 
             stage.addChild(correctText);
-            createjs.Tween.get(correctText).to({alpha: 0}, 2000).call(removeCorrectText);
+            createjs.Tween.get(correctText).to({alpha: 0}, 3500).call(removeCorrectText);
 
-            playSound("puckgoal");
+            playSound("goalcheer");
 
             gameStarted = false;
             generateNumbers();
@@ -512,7 +516,9 @@ function checkNumbers(event) {
             boxCount = 0;
 
             stage.addChild(incorrectText);
-            createjs.Tween.get(incorrectText).to({alpha: 0}, 2000).call(removeIncorrectText);
+            createjs.Tween.get(incorrectText).to({alpha: 0}, 3500).call(removeIncorrectText);
+
+            playSound("goalaww");
 
             gameStarted = false;
             generateNumbers();
@@ -529,7 +535,7 @@ function checkNumbers(event) {
 function removeIncorrectText() {
     stage.removeChild(incorrectText);
     //incorrect text;
-    incorrectText = new createjs.Text("Incorrect!", "24px Comic Sans MS", "#FFFFFF");
+    incorrectText = new createjs.Text("Miss! Try again!", "36px Arial", "#FFFFFF");
     incorrectText.textBaseline = "alphabetic";
     incorrectText.x = STAGE_WIDTH / 2 - incorrectText.getMeasuredWidth() / 2;
     incorrectText.y = 400;
@@ -538,7 +544,7 @@ function removeIncorrectText() {
 function removeCorrectText() {
     stage.removeChild(correctText);
     //correct text
-    correctText = new createjs.Text("Correct!", "24px Comic Sans MS", "#FFFFFF");
+    correctText = new createjs.Text("Goal!!", "36px Arial", "#FFFFFF");
     correctText.textBaseline = "alphabetic";
     correctText.x = STAGE_WIDTH / 2 - correctText.getMeasuredWidth() / 2;
     correctText.y = 400;
