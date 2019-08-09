@@ -10,38 +10,73 @@ let gameStarted = false;
 let STAGE_WIDTH, STAGE_HEIGHT;
 let stage = new createjs.Stage("gameCanvas"); // canvas id is gameCanvas
 
+let json = {
+    "levels" : [
+        //LEVEL 1
+        [
+            //QUESTION 1
+            [
+                0,
+                1,
+                2,
+                3,
+                4
+            ],
+            //QUESTION 2
+            [
+                0.15,
+                0.25,
+                0.3,
+                0.5,
+                0.7
+            ]
+        ],
+        //LEVEL 2
+        [
+            //QUESTION 1
+            [
+                0,
+                1,
+                2,
+                3,
+                4
+            ],
+            //QUESTION 2
+            [
+                0.15,
+                0.25,
+                0.3,
+                0.5,
+                0.7
+            ]
+        ]
+    ]
+};
+
 let score = 0;
 let level = 0;
 let question = 0;
-
 let numbers = [];
 let numbersOrder = [];
-
 let clickedPylon;
 
 let levelText;
 let questionText;
 let scoreText;
-
 let correctText;
 let incorrectText;
 
 // bitmap letiables
 let background;
 let logo;
-
 let pylons = [];
 let pylonText = [];
 let numberBoxes = [];
-
 let hockeypuck;
 let checkbutton;
 let howto;
-
 let winscreen;
-
 let firstLevel;
-
 let muted;
 
 /*
@@ -235,9 +270,11 @@ function getRandomInt(max) {
  */
 function generateNumbers() {
     while (numbers.length < 5) {
-        let max = level * 10 + 10;
+        //TODO make it pull from the json config
+        console.log("level: " + level + " question: " + question);
 
-        let number = getRandomInt(max);
+        let number = json.levels[level][question][getRandomInt(json.levels[level][question].length)];
+
         if (!numbers.includes(number)) {
             numbers.push(number);
         }
@@ -321,7 +358,12 @@ function initGraphics() {
 
     stage.addChild(questionText);
 
-    scoreText = new createjs.Text("Score: " + (score) + "/" + ((level + 1) * (5)), "32px Arial", "#FFFFFF");
+    let maxScoreCount = 0;
+    for(cc in json.levels){
+        maxScoreCount = maxScoreCount + json.levels[cc].length;
+    }
+
+    scoreText = new createjs.Text("Score: " + (score) + "/" + maxScoreCount, "32px Arial", "#FFFFFF");
     scoreText.align = "center";
     scoreText.textBaseline = "alphabetic";
     scoreText.x = 25;
@@ -476,17 +518,14 @@ function checkNumbers(event) {
 
             playSound("goalcheer");
 
-            gameStarted = false;
-            generateNumbers();
-            initGraphics();
-
-            if (question < 3) {
+            if (question < (json.levels[level].length - 1)) {
                 question++;
             } else {
                 question = 0;
-                if (level < 2) {
+                if (level < json.levels.length - 1) {
                     level++;
                 } else {
+                    gameStarted = false;
                     winscreen.y = 200;
                     winscreen.x = (STAGE_WIDTH / 2) - (winscreen.image.width / 2);
                     winscreen.on("click", function (event) {
@@ -497,7 +536,14 @@ function checkNumbers(event) {
                     playSound("winhorn");
                 }
             }
-        } else {
+
+            if(gameStarted){
+                gameStarted = false;
+                generateNumbers();
+                initGraphics();
+            }
+        }
+         else {
             console.log("numbers are not in order.");
 
             numbersOrder = [];
@@ -591,7 +637,7 @@ function pylonClickHandler(event) {
         for (let i = 0; i < pylons.length; i++) {
             if (pylons[i] == event.target) {
                 if (clickedPylon == null) {
-                    numbersOrder.push(parseInt(pylonText[i].text.toString()));
+                    numbersOrder.push(parseFloat(pylonText[i].text.toString()));
                     //stage.removeChild(pylonText[i]);
                     clickedPylon = i;
 
