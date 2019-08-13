@@ -384,26 +384,28 @@ function initGraphics() {
 
     if (!gameStarted) {
         for (let i = 0; i < numberBoxes.length; i++) {
-            numberBoxes[i].scaleX = 2;
+            numberBoxes[i].scaleX = 2.5;
             numberBoxes[i].scaleY = 2;
             numberBoxes[i].y = 425;
 
+            let center = (STAGE_WIDTH / 2) - (numberBoxes[i].image.width * numberBoxes[i].scaleX / 2);
+
             switch (i) {
                 case 0:
-                    numberBoxes[i].x = (STAGE_WIDTH / 2) - (numberBoxes[i].image.width * (6));
+                    numberBoxes[i].x = center - ((numberBoxes[i].image.width * numberBoxes[i].scaleX + 10) * 2);
                     break;
                 case 1:
-                    numberBoxes[i].x = (STAGE_WIDTH / 2) - (numberBoxes[i].image.width * (4)) + (numberBoxes[i].image.width / 1.5);
+                    numberBoxes[i].x = center - (numberBoxes[i].image.width * numberBoxes[i].scaleX + 10);
                     break;
                 case 2:
                     //                     //CENTER
-                    numberBoxes[i].x = (STAGE_WIDTH / 2) - (numberBoxes[i].image.width);
+                    numberBoxes[i].x = center;
                     break;
                 case 3:
-                    numberBoxes[i].x = (STAGE_WIDTH / 2) + (numberBoxes[i].image.width * (2)) - (numberBoxes[i].image.width / 1.5);
+                    numberBoxes[i].x = center + (numberBoxes[i].image.width * numberBoxes[i].scaleX + 10);
                     break;
                 case 4:
-                    numberBoxes[i].x = (STAGE_WIDTH / 2) + (numberBoxes[i].image.width * (4));
+                    numberBoxes[i].x = center + ((numberBoxes[i].image.width * numberBoxes[i].scaleX + 10) * 2);
                     break;
             }
             stage.addChild(numberBoxes[i]);
