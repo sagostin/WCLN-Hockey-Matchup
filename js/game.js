@@ -16,38 +16,38 @@ let json = {
         [
             //QUESTION 1
             [
-                0,
-                1,
-                2,
-                3,
-                4
+                100000,
+                1000000,
+                28389,
+                39999,
+                471798
             ],
             //QUESTION 2
             [
-                0.15,
-                0.25,
-                0.3,
-                0.5,
-                0.7
+                100038,
+                10000000,
+                192893,
+                1928983,
+                129938
             ]
         ],
         //LEVEL 2
         [
             //QUESTION 1
             [
-                0,
-                1,
-                2,
-                3,
-                4
+                9818723,
+                19073012,
+                928371837,
+                128391,
+                1283793
             ],
             //QUESTION 2
             [
-                0.15,
-                0.25,
-                0.3,
-                0.5,
-                0.7
+                138978173,
+                182937,
+                183790,
+                1837998,
+                198237983
             ]
         ]
     ]
@@ -415,40 +415,42 @@ function initGraphics() {
     for (let i = 0; i < pylons.length; i++) {
         pylons[i].scaleX = 0.2;
         pylons[i].scaleY = 0.2;
-        pylonText[i] = new createjs.Text(numbers[i] + "", "50px Arial", "#FFFFFF");
+        pylonText[i] = new createjs.Text(numbers[i] + "", "32px Arial", "#FFFFFF");
         pylonText[i].textAlign = "center";
         pylonText[i].textBaseline = "alphabetic";
 
+        let center = (STAGE_WIDTH / 2) - (pylons[i].image.width * pylons[i].scaleX / 2);
+
         switch (i) {
             case 0:
-                pylons[i].x = (STAGE_WIDTH / 2) - ((pylons[i].image.width * pylons[i].scaleX / 2) * (6)) + ((pylons[i].image.width * pylons[i].scaleX / 2) / 1.5);
+                pylons[i].x = center - ((pylons[i].image.width * pylons[i].scaleX + 30) * 2);
                 pylons[i].y = 250;
-                pylonText[i].x = (STAGE_WIDTH / 2) - ((pylons[i].image.width * pylons[i].scaleX / 2) * (4)) - 20;
+                pylonText[i].x = (STAGE_WIDTH / 2) - ((pylons[i].image.width * pylons[i].scaleX + 30) * 2);
                 pylonText[i].y = 350 + 60;
                 break;
             case 1:
-                pylons[i].x = (STAGE_WIDTH / 2) - ((pylons[i].image.width * pylons[i].scaleX / 2) * (4)) + ((pylons[i].image.width * pylons[i].scaleX / 2) / 1.5);
-                pylons[i].y = 225;
-                pylonText[i].x = (STAGE_WIDTH / 2) - ((pylons[i].image.width * pylons[i].scaleX / 2) * (2)) - 20;
-                pylonText[i].y = 325 + 60;
+                pylons[i].x = center - (pylons[i].image.width * pylons[i].scaleX + 30);
+                pylons[i].y = 220;
+                pylonText[i].x = (STAGE_WIDTH / 2) - ((pylons[i].image.width * pylons[i].scaleX + 30));
+                pylonText[i].y = 320 + 60;
                 break;
             case 2:
                 //CENTER
-                pylons[i].x = (STAGE_WIDTH / 2) - (pylons[i].image.width * pylons[i].scaleX / 2);
-                pylons[i].y = 200;
+                pylons[i].x = center;
+                pylons[i].y = 190;
                 pylonText[i].x = (STAGE_WIDTH / 2);
-                pylonText[i].y = 300 + 60;
+                pylonText[i].y = 290 + 60;
                 break;
             case 3:
-                pylons[i].x = (STAGE_WIDTH / 2) + ((pylons[i].image.width * pylons[i].scaleX / 2) * (2)) - ((pylons[i].image.width * pylons[i].scaleX / 2) / 1.5);
-                pylons[i].y = 225;
-                pylonText[i].x = (STAGE_WIDTH / 2) + ((pylons[i].image.width * pylons[i].scaleX / 2) * (2)) + 20;
-                pylonText[i].y = 325 + 60;
+                pylons[i].x = center + (pylons[i].image.width * pylons[i].scaleX + 30);
+                pylons[i].y = 220;
+                pylonText[i].x = (STAGE_WIDTH / 2) + ((pylons[i].image.width * pylons[i].scaleX + 30));
+                pylonText[i].y = 320 + 60;
                 break;
             case 4:
-                pylons[i].x = (STAGE_WIDTH / 2) + ((pylons[i].image.width * pylons[i].scaleX / 2) * (4)) - ((pylons[i].image.width * pylons[i].scaleX / 2) / 1.5);
+                pylons[i].x = center + ((pylons[i].image.width * pylons[i].scaleX + 30) * 2);
                 pylons[i].y = 250;
-                pylonText[i].x = (STAGE_WIDTH / 2) + ((pylons[i].image.width * pylons[i].scaleX / 2) * (4)) + 20;
+                pylonText[i].x = (STAGE_WIDTH / 2) + ((pylons[i].image.width * pylons[i].scaleX + 30) * 2);
                 pylonText[i].y = 350 + 60;
                 break;
         }
@@ -677,8 +679,11 @@ let boxCount = 0;
 function hockeyPuckAnimate() {
 
     //TODO fix these errors.
-    pylonText[clickedPylon].x = numberBoxes[boxCount].x + (numberBoxes[boxCount].image.width);
-    pylonText[clickedPylon].y = numberBoxes[boxCount].y + (numberBoxes[boxCount].image.height * 1.5);
+    pylonText[clickedPylon].x = numberBoxes[boxCount].x + (numberBoxes[boxCount].image.width * numberBoxes[boxCount].scaleX / 2);
+    pylonText[clickedPylon].y = numberBoxes[boxCount].y +
+        (numberBoxes[boxCount].image.height
+            * numberBoxes[boxCount].scaleY / 2)
+        + pylonText[clickedPylon].getMeasuredHeight() / 2;
     pylonText[clickedPylon].color = "black";
     stage.removeChild(pylons[clickedPylon]);
 
