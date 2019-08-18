@@ -415,7 +415,7 @@ function initGraphics() {
     for (let i = 0; i < pylons.length; i++) {
         pylons[i].scaleX = 0.2;
         pylons[i].scaleY = 0.2;
-        pylonText[i] = new createjs.Text(numbers[i] + "", "32px Arial", "#FFFFFF");
+        pylonText[i] = new createjs.Text(formatNumber(numbers[i]) + "", "32px Arial", "#FFFFFF");
         pylonText[i].textAlign = "center";
         pylonText[i].textBaseline = "alphabetic";
 
@@ -641,7 +641,8 @@ function pylonClickHandler(event) {
         for (let i = 0; i < pylons.length; i++) {
             if (pylons[i] == event.target) {
                 if (clickedPylon == null) {
-                    numbersOrder.push(parseFloat(pylonText[i].text.toString()));
+                    console.log(pylonText[i].text.toString().replace(/\s/g, ''));
+                    numbersOrder.push(parseFloat(pylonText[i].text.toString().replace(/\s/g, '')));
                     //stage.removeChild(pylonText[i]);
                     clickedPylon = i;
 
@@ -693,6 +694,10 @@ function hockeyPuckAnimate() {
     stage.removeChild(hockeypuck);
     resetHockeyPuck();
     //Tween complete
+}
+
+function formatNumber(num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1 ');
 }
 
 /**
