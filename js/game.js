@@ -388,22 +388,24 @@ function initGraphics() {
             numberBoxes[i].scaleY = 2;
             numberBoxes[i].y = 425;
 
+            let center = (STAGE_WIDTH / 2) - (numberBoxes[i].image.width * numberBoxes[i].scaleX / 2);
+
             switch (i) {
                 case 0:
-                    numberBoxes[i].x = (STAGE_WIDTH / 2) - (numberBoxes[i].image.width * (6));
+                    numberBoxes[i].x = center - ((numberBoxes[i].image.width * numberBoxes[i].scaleX + 10) * 2);
                     break;
                 case 1:
-                    numberBoxes[i].x = (STAGE_WIDTH / 2) - (numberBoxes[i].image.width * (4)) + (numberBoxes[i].image.width / 1.5);
+                    numberBoxes[i].x = center - (numberBoxes[i].image.width * numberBoxes[i].scaleX + 10);
                     break;
                 case 2:
                     //                     //CENTER
-                    numberBoxes[i].x = (STAGE_WIDTH / 2) - (numberBoxes[i].image.width);
+                    numberBoxes[i].x = center;
                     break;
                 case 3:
-                    numberBoxes[i].x = (STAGE_WIDTH / 2) + (numberBoxes[i].image.width * (2)) - (numberBoxes[i].image.width / 1.5);
+                    numberBoxes[i].x = center + (numberBoxes[i].image.width * numberBoxes[i].scaleX + 10);
                     break;
                 case 4:
-                    numberBoxes[i].x = (STAGE_WIDTH / 2) + (numberBoxes[i].image.width * (4));
+                    numberBoxes[i].x = center + ((numberBoxes[i].image.width * numberBoxes[i].scaleX + 10) * 2);
                     break;
             }
             stage.addChild(numberBoxes[i]);
@@ -413,43 +415,46 @@ function initGraphics() {
     for (let i = 0; i < pylons.length; i++) {
         pylons[i].scaleX = 0.2;
         pylons[i].scaleY = 0.2;
-        pylonText[i] = new createjs.Text(numbers[i] + "", "50px Arial", "#FFFFFF");
+        pylonText[i] = new createjs.Text(numbers[i] + "", "40px Arial", "#FFFFFF");
         pylonText[i].textAlign = "center";
         pylonText[i].textBaseline = "alphabetic";
 
+        let center = (STAGE_WIDTH / 2) - (pylons[i].image.width * pylons[i].scaleX / 2);
+
         switch (i) {
             case 0:
-                pylons[i].x = (STAGE_WIDTH / 2) - ((pylons[i].image.width * pylons[i].scaleX / 2) * (6)) + ((pylons[i].image.width * pylons[i].scaleX / 2) / 1.5);
+                pylons[i].x = center - ((pylons[i].image.width * pylons[i].scaleX + 30) * 2);
                 pylons[i].y = 250;
-                pylonText[i].x = (STAGE_WIDTH / 2) - ((pylons[i].image.width * pylons[i].scaleX / 2) * (4)) - 20;
+                pylonText[i].x = (STAGE_WIDTH / 2) - ((pylons[i].image.width * pylons[i].scaleX + 30) * 2);
                 pylonText[i].y = 350 + 60;
                 break;
             case 1:
-                pylons[i].x = (STAGE_WIDTH / 2) - ((pylons[i].image.width * pylons[i].scaleX / 2) * (4)) + ((pylons[i].image.width * pylons[i].scaleX / 2) / 1.5);
-                pylons[i].y = 225;
-                pylonText[i].x = (STAGE_WIDTH / 2) - ((pylons[i].image.width * pylons[i].scaleX / 2) * (2)) - 20;
-                pylonText[i].y = 325 + 60;
+                pylons[i].x = center - (pylons[i].image.width * pylons[i].scaleX + 30);
+                pylons[i].y = 220;
+                pylonText[i].x = (STAGE_WIDTH / 2) - ((pylons[i].image.width * pylons[i].scaleX + 30));
+                pylonText[i].y = 320 + 60;
                 break;
             case 2:
                 //CENTER
-                pylons[i].x = (STAGE_WIDTH / 2) - (pylons[i].image.width * pylons[i].scaleX / 2);
-                pylons[i].y = 200;
+                pylons[i].x = center;
+                pylons[i].y = 190;
                 pylonText[i].x = (STAGE_WIDTH / 2);
-                pylonText[i].y = 300 + 60;
+                pylonText[i].y = 290 + 60;
                 break;
             case 3:
-                pylons[i].x = (STAGE_WIDTH / 2) + ((pylons[i].image.width * pylons[i].scaleX / 2) * (2)) - ((pylons[i].image.width * pylons[i].scaleX / 2) / 1.5);
-                pylons[i].y = 225;
-                pylonText[i].x = (STAGE_WIDTH / 2) + ((pylons[i].image.width * pylons[i].scaleX / 2) * (2)) + 20;
-                pylonText[i].y = 325 + 60;
+                pylons[i].x = center + (pylons[i].image.width * pylons[i].scaleX + 30);
+                pylons[i].y = 220;
+                pylonText[i].x = (STAGE_WIDTH / 2) + ((pylons[i].image.width * pylons[i].scaleX + 30));
+                pylonText[i].y = 320 + 60;
                 break;
             case 4:
-                pylons[i].x = (STAGE_WIDTH / 2) + ((pylons[i].image.width * pylons[i].scaleX / 2) * (4)) - ((pylons[i].image.width * pylons[i].scaleX / 2) / 1.5);
+                pylons[i].x = center + ((pylons[i].image.width * pylons[i].scaleX + 30) * 2);
                 pylons[i].y = 250;
-                pylonText[i].x = (STAGE_WIDTH / 2) + ((pylons[i].image.width * pylons[i].scaleX / 2) * (4)) + 20;
+                pylonText[i].x = (STAGE_WIDTH / 2) + ((pylons[i].image.width * pylons[i].scaleX + 30) * 2);
                 pylonText[i].y = 350 + 60;
                 break;
         }
+
         pylons[i].on("click", function (event) {
             pylonClickHandler(event);
         });
